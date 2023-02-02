@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
 import FeedbackOptions from './FeedbackOptions';
 import Statistics from './Statistics';
@@ -7,64 +7,56 @@ import Notification from './Notification';
 
 import styles from './feedback.module.css';
 
-class Feedback extends Component {
-  state = {
+const Feedback = () => {
+  const [votes, setVotes] = useState({
     good: 0,
     neutral: 0,
     bad: 0,
-  };
+  });
 
-  countTotalFeedback() {
-    const { good, neutral, bad } = this.state;
-    const total = good + neutral + bad;
-    return total;
-  }
-  // Функція може бути використана для підрахунку будь-якого виду оцінки
-  countFeedbackPercentage(propName) {
-    const total = this.countTotalFeedback();
-    if (!total) {
-      return 0;
-    }
-    const value = this.state[propName];
-    const result = Math.round((value / total) * 100);
-    return Number(result);
-  }
-
-  increaseVotes = name => {
-    this.setState(prevState => {
-      return { [name]: prevState[name] + 1 };
+  const increaseVotes = name => {
+    setVotes(prevState => {
+      const value = prevState[name];
+      return { ...prevState, [name]: value + 1 };
     });
   };
 
-  render() {
-    const { good, neutral, bad } = this.state;
-    const total = this.countTotalFeedback();
-    const positiveFeedback = this.countFeedbackPercentage('good');
+  const total = votes.good + votes.neutral + votes.bad;
+  // Функція може бути використана для підрахунку будь-якого виду оцінки
+  const countFeedbackPercentage = propName => {
+    if (!total) {
+      return 0;
+    }
+    const value = votes[propName];
+    const result = Math.round((value / total) * 100);
+    return Number(result);
+  };
 
-    return (
-      <div className={styles.wrapper}>
-        <Section title="Please leave feedback">
-          <FeedbackOptions
-            options={Object.keys(this.state)}
-            increaseVotes={this.increaseVotes}
+  const positiveFeedback = countFeedbackPercentage('good');
+
+  return (
+    <div className={styles.wrapper}>
+      <Section title="Please leave feedback">
+        <FeedbackOptions
+          options={Object.keys(votes)}
+          increaseVotes={increaseVotes}
+        />
+      </Section>
+      {total ? (
+        <Section title="Statistics">
+          <Statistics
+            good={votes.good}
+            neutral={votes.neutral}
+            bad={votes.bad}
+            total={total}
+            positiveFeedback={positiveFeedback}
           />
         </Section>
-        {total ? (
-          <Section title="Statistics">
-            <Statistics
-              good={good}
-              neutral={neutral}
-              bad={bad}
-              total={total}
-              positiveFeedback={positiveFeedback}
-            />
-          </Section>
-        ) : (
-          <Notification message="There is no feedback" />
-        )}
-      </div>
-    );
-  }
-}
+      ) : (
+        <Notification message="There is no feedback" />
+      )}
+    </div>
+  );
+};
 
 export default Feedback;
