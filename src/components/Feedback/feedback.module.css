@@ -1,0 +1,28 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.btnWrapper {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.btn {
+    width: 75px;
+    height: 30px;
+    align-self: center;
+    border: 1px solid;
+    border-radius: 10%;
+    cursor: pointer;
+}
+
+li:not(:last-child) {
+    margin-right: 20px;
+}
